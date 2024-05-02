@@ -1,0 +1,1 @@
+# docker run --name bcknd_postgres -e POSTGRES_PASSWORD=senha -p 5432:5432 -d postgres #
