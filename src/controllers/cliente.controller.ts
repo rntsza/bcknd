@@ -1,4 +1,26 @@
 import { Request, Response } from 'express';
+import Advogado from './advogado.controller';
+
+
+interface Cliente {
+  id: number;
+  nome: string;
+  tipo: Tipo;
+  cpf: string | null;
+  cnpj: string | null;
+  nascimento: string | null;
+  nomeMae: string | null;
+  nomePai: string | null;
+  conjuge: string | null;
+  estadoCivil: string | null;
+  isActive: boolean;
+  advogado: Advogado;
+}
+
+enum Tipo {
+  FISICA = 'FISICA',
+  JURIDICA = 'JURIDICA',
+}
 
 class Cliente {
   static async getAll(req: Request, res: Response) {

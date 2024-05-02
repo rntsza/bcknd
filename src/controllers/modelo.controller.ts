@@ -1,4 +1,20 @@
 import { Request, Response } from 'express';
+import Advogado from './advogado.controller';
+
+interface ModeloTexto {
+  id: number;
+  titulo: string;
+  texto: string;
+  isActive: boolean;
+  advogado: Advogado;
+  tags: Tag[];
+}
+
+interface Tag {
+  id: number;
+  nome: string;
+  modelos: ModeloTexto[];
+}
 
 class Modelo {
   static async getAll(req: Request, res: Response) {

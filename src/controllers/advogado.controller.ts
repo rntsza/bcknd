@@ -1,29 +1,33 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 const saltRounds = 10;
+import ModeloTexto from './modelo.controller';
+import Cliente from './cliente.controller';
+
+interface Advogado {
+  id: number;
+  createdAt: Date;
+  email: string;
+  password: string;
+  nome: string | null;
+  nascimento: Date | null;
+  role: Role;
+  isActive: boolean;
+  clientes: Cliente[];
+  modelosTexto: ModeloTexto[];
+}
+
+enum Role {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
 
 class Advogado {
-  static async find(req: Request): Promise<Omit<Advogado, 'password'>[]> {
-    const advogados = await req.prisma.advogado.findMany({
-      where: { isActive: true },
-    });
-
-    return advogados.map(advogado => {
-      const {
-        password,
-        role,
-        nascimento,
-        createdAt,
-        isActive,
-        ...advogadoWithInterceptor
-      } = advogado;
-      return advogadoWithInterceptor;
-    });
-  }
-
   static async getAll(req: Request, res: Response) {
     try {
-      const advogados = await Advogado.find(req);
+      const advogados = await req.prisma.advogado.findMany({
+        where: { isActive: true },
+      });
       res.json(advogados);
     } catch (error) {
       console.error('Error fetching advogados:', error);
