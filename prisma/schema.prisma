@@ -15,15 +15,17 @@ datasource db {
 
 model Advogado {
   id         Int       @id @default(autoincrement())
+  userId     String?   @default(uuid()) // TODO: Deixar obrigatório depois do wipe dos dados
   createdAt  DateTime  @default(now())
+  updateAt   DateTime? @updatedAt
   email      String    @unique
   password   String    @db.VarChar(255)
   nome       String?
   nascimento DateTime?
   role       Role      @default(USER)
-
+  avatar     String?   @db.VarChar(255)
   // Soft delete
-  isActive Boolean @default(true)
+  isActive   Boolean   @default(true)
 
   // Relacionamento com clientes
   clientes Cliente[]
@@ -48,7 +50,7 @@ model Cliente {
   nomePai     String?
   conjuge     String?
   estadoCivil String?
-
+  avatar      String? @db.VarChar(255)
   // TODO: Adicionar o restante dos campos de cliente
 
   // Soft delete

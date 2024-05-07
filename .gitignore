@@ -2,3 +2,7 @@
 .env*
 !.env.vault
 node_modules
+temp
+
+tmp/*
+!tmp/.gitkeep

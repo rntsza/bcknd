@@ -2,16 +2,15 @@ FROM node:latest
 
 WORKDIR /usr/src/app
 
-COPY package*.json yarn.lock ./
+# COPY package*.json yarn.lock ./
 
 RUN yarn install
 
-COPY prisma ./prisma
-COPY .env ./
+# COPY prisma ./prisma
 
 # RUN yarn add prisma
 
-RUN npx prisma generate
+# RUN npx prisma generate
 
 # RUN yarn install
 

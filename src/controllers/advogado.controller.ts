@@ -1,17 +1,23 @@
 import bcrypt from 'bcrypt';
-import { Request, Response } from 'express';
+import { Request, Response, response } from 'express';
 const saltRounds = 10;
 import ModeloTexto from './modelo.controller';
 import Cliente from './cliente.controller';
+import { v4 as uuidv4 } from 'uuid';
+import ensureAuthenticated from '../middlewares/ensureAuthenticated';
+import UpdateUserAvatarService from '../services/UpdateUserAvatarService';
 
 interface Advogado {
   id: number;
+  userId: string;
   createdAt: Date;
+  updateAt: Date;
   email: string;
   password: string;
   nome: string | null;
   nascimento: Date | null;
   role: Role;
+  avatar: string | null;
   isActive: boolean;
   clientes: Cliente[];
   modelosTexto: ModeloTexto[];
@@ -23,15 +29,49 @@ enum Role {
 }
 
 class Advogado {
+  static interceptor(advogados: any | any[]) {
+    if (Array.isArray(advogados)) {
+      return advogados.map(advogado => {
+        const {
+          password,
+          nascimento,
+          role,
+          updateAt,
+          isActive,
+          id,
+          ...advogadoWithInterceptor
+        } = advogado;
+        return advogadoWithInterceptor;
+      });
+    } else {
+      const {
+        password,
+        nascimento,
+        role,
+        updateAt,
+        isActive,
+        id,
+        ...advogadoWithInterceptor
+      } = advogados;
+      return advogadoWithInterceptor;
+    }
+  }
+
   static async getAll(req: Request, res: Response) {
     try {
-      const advogados = await req.prisma.advogado.findMany({
-        where: { isActive: true },
+      ensureAuthenticated(req, res, async () => {
+        try {
+          const advogados = await req.prisma.advogado.findMany({
+            where: { isActive: true },
+          });
+          const interceptor = Advogado.interceptor(advogados);
+          res.json(interceptor);
+        } catch (error) {
+          res.status(500).json({ 'Erro buscando advogados:': error });
+        }
       });
-      res.json(advogados);
-    } catch (error) {
-      console.error('Error fetching advogados:', error);
-      res.status(500).json({ error: 'Internal server error' });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   }
 
@@ -44,12 +84,13 @@ class Advogado {
         },
       });
       if (advogado) {
-        res.json(advogado);
+        const interceptor = Advogado.interceptor(advogado);
+        res.json(interceptor);
       } else {
-        res.status(404).json({ error: 'Advogado not found' });
+        res.status(404).json({ error: 'Advogado não encontrado' });
       }
     } catch (error) {
-      console.error('Error fetching advogado by id:', error);
+      console.error('Erro buscando advogado por id:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
@@ -69,14 +110,17 @@ class Advogado {
 
       const newAdvogado = await req.prisma.advogado.create({
         data: {
+          userId: uuidv4(),
           nome,
           email,
           password: hashedPassword,
         },
       });
-      res.status(201).json(newAdvogado);
+      const interceptor = Advogado.interceptor(newAdvogado);
+      res.status(201).json(interceptor);
+      // res.status(201).json(newAdvogado);
     } catch (error) {
-      console.error('Error creating advogado:', error);
+      console.error('Erro criando advogado:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
@@ -98,7 +142,26 @@ class Advogado {
       });
       res.json(updatedAdvogado);
     } catch (error) {
-      console.error('Error updating advogado:', error);
+      console.error('Erro atualizando advogado:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  static async avatar(req: Request, res: Response) {
+    try {
+      ensureAuthenticated(req, res, async () => {
+        try {
+          const updateUserAvatar = new UpdateUserAvatarService();
+          await updateUserAvatar.execute({
+            userId: req.user.id,
+            avatarFilename: req.file?.filename || '',
+          });
+          return res.json(updateUserAvatar);
+        } catch (error) {
+          res.status(500).json({ error: 'Internal server error' });
+        }
+      });
+    } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
     }
   }
@@ -115,9 +178,9 @@ class Advogado {
         where: { id: parseInt(id) },
         data: { isActive: false },
       });
-      res.json({ message: 'Advogado deleted successfully' });
+      res.json({ message: 'Advogado desabilitado com sucesso' });
     } catch (error) {
-      console.error('Error deleting advogado:', error);
+      console.error('Erro deletando advogado:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
