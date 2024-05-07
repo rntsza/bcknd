@@ -2,6 +2,7 @@ import { Advogado, PrismaClient } from '@prisma/client';
 import path from 'path';
 import uploadConfig from '../config/upload';
 import fs from 'fs';
+import AppError from '../errors/AppError';
 
 const prisma = new PrismaClient();
 
@@ -24,7 +25,7 @@ class UpdateUserAvatarService {
 
     if (!userRepository) {
 
-      throw new Error('Only authenticated users can change avatar.');
+      throw new AppError('Only authenticated users can change avatar.', 401);
     }
 
     if (userRepository.avatar) {

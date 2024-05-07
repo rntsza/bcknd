@@ -1,7 +1,8 @@
 import { compare } from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
-import { sign, verify } from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 import authConfig from '../config/auth';
+import AppError from '../errors/AppError';
 
 const prisma = new PrismaClient();
 
@@ -18,11 +19,11 @@ class AuthenticateUserService {
       },
     });
 
-    if (!advogado) throw new Error('Email/Senha incorretos');
+    if (!advogado) throw new AppError('Email/Senha incorretos', 401);
 
     const passwordMatched = await compare(password, advogado.password);
 
-    if (!passwordMatched) throw new Error('Email/Senha incorretos');
+    if (!passwordMatched) throw new AppError('Email/Senha incorretos', 401);
 
     const { secret, expiresIn } = authConfig.jwt;
     const token = sign(
