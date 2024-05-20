@@ -63,6 +63,9 @@ routes.delete('/tags/:id', Tag.delete);
 // routes.post('/openai', OpenAIsvc.generateText);
 
 // Rota de sessão
+// routes.use('/sessions', cors(corsOptions), sessionsRouter);
 routes.use('/sessions', sessionsRouter);
+
+//
 
 export default routes;

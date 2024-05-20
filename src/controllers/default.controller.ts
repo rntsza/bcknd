@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { processQuestion } from '../services/openAIApi.services.js'
+// import { processQuestion } from '../services/openAIApi.services.js'
 
 class Default {
   static async getAll(req: Request, res: Response) {
@@ -14,8 +14,8 @@ class Default {
 
   static async create(req: Request, res: Response) {
     try {
-      const resposta = await processQuestion({ content: 'Sua pergunta aqui' });
-      console.log(resposta);
+      // const resposta = await processQuestion({ content: 'Sua pergunta aqui' });
+      // console.log(resposta);
     } catch (error) {}
   }
 

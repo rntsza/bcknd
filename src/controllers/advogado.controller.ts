@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { Request, Response, response } from 'express';
+import { Request, Response } from 'express';
 const saltRounds = 10;
 import ModeloTexto from './modelo.controller';
 import Cliente from './cliente.controller';
@@ -61,14 +61,14 @@ class Advogado {
     try {
       ensureAuthenticated(req, res, async () => {
         try {
-          const advogados = await req.prisma.advogado.findMany({
-            where: { isActive: true },
-          });
-          const interceptor = Advogado.interceptor(advogados);
-          res.json(interceptor);
-        } catch (error) {
-          res.status(500).json({ 'Erro buscando advogados:': error });
-        }
+      const advogados = await req.prisma.advogado.findMany({
+        where: { isActive: true },
+      });
+      const interceptor = Advogado.interceptor(advogados);
+      res.json(interceptor);
+      } catch (error) {
+        res.status(500).json({ 'Erro buscando advogados:': error });
+      }
       });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -97,7 +97,7 @@ class Advogado {
 
   static async create(req: Request, res: Response) {
     try {
-      const { nome, email, password } = req.body;
+      const { name, email, password } = req.body;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       const isValid = await req.prisma.advogado.findFirst({
@@ -106,12 +106,12 @@ class Advogado {
         },
       });
       if (isValid)
-        return res.status(401).json({ error: 'Email already exists' });
+        return res.status(401).json({ error: 'O email já existe' });
 
       const newAdvogado = await req.prisma.advogado.create({
         data: {
           userId: uuidv4(),
-          nome,
+          nome: name,
           email,
           password: hashedPassword,
         },
