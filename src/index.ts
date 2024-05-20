@@ -9,8 +9,7 @@ import { getIp } from './services/IpApi';
 const allowedOrigins : string[] = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://google.com',
-  '*'
+  'https://frntnd-reegomes-projects.vercel.app',
 ];
 
 const corsOptions: cors.CorsOptions = {
