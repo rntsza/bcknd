@@ -1,0 +1,23 @@
+# Exported from Render on 2024-09-20T00:51:30Z
+services:
+- type: web
+  name: bcknd
+  runtime: node
+  repo: https://github.com/rntsza/bcknd
+  plan: free
+  envVars:
+  - key: SECRET
+    sync: false
+  - key: ORGANIZATION_ID
+    sync: false
+  - key: OPENAI_API_KEY
+    sync: false
+  - key: DATABASE_URL
+    sync: false
+  - key: PORT
+    sync: false
+  region: virginia
+  buildCommand: yarn --frozen-lockfile install
+  startCommand: yarn dev
+  rootDir: src
+version: "1"
