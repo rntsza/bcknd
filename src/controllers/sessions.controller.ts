@@ -6,8 +6,8 @@ const sessionsRouter = Router();
 sessionsRouter.post('/', async (request, response) => {
   try {
     const { email, password } = request.body;
-    console.log(request.body)
-    console.log(email, password)
+    // console.log(request.body)
+    // console.log(email, password)
     const authenticateUser = new AuthenticateUserService();
 
     const { advogado, token } = await authenticateUser.execute({
