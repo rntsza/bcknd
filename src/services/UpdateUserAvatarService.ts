@@ -29,10 +29,15 @@ class UpdateUserAvatarService {
     }
 
     if (userRepository.avatar) {
-      const userAvatarFilePath = path.join(
+      const userAvatarFilePath = path.resolve(
         uploadConfig.directory,
         userRepository?.avatar,
       );
+      
+      if (!userAvatarFilePath.startsWith(uploadConfig.directory)) {
+        throw new AppError('Invalid file path.', 400);
+      }
+      
       const userAvatarFileExistis = await fs.promises.stat(userAvatarFilePath);
 
       if (userAvatarFileExistis) {
