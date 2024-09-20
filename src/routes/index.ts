@@ -7,11 +7,19 @@ import Tag from '../controllers/tag.controller';
 import sessionsRouter from '../controllers/sessions.controller';
 import multer from 'multer';
 import uploadConfig from '../config/upload';
+import rateLimit from 'express-rate-limit';
 
 const upload = multer(uploadConfig);
 // import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
 const routes = Router();
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+
+routes.use(limiter);
 
 const getPgVersion = async (req: Request, res: Response) => {
   try {
