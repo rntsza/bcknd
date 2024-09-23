@@ -107,7 +107,6 @@ class Advogado {
       });
       if (isValid)
         return res.status(401).json({ error: 'O email já existe' });
-
       const newAdvogado = await req.prisma.advogado.create({
         data: {
           userId: uuidv4(),

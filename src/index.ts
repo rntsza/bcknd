@@ -14,10 +14,11 @@ const allowedOrigins : string[] = [
 
 const corsOptions: cors.CorsOptions = {
   origin: function (origin, callback) {
-    console.log('Origin', origin);
+    console.log('Request received with origin:', origin);
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.log('Blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -30,7 +31,8 @@ app.use(express.json());
 app.use(prismaMiddleware);
 app.use(cors(corsOptions));
 app.use(routes);
-app.get('/ip', getIp);
+app.use(getIp);
+app.use('/api', routes);
 
 // app.use(ensureAuthenticated);
 
